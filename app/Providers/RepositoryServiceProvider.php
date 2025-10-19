@@ -2,17 +2,15 @@
 
 namespace App\Providers;
 
+use App\Repositories\User\Contracts\UserRepository;
+use App\Repositories\User\Core\UserRepositoryCore;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    public array $bindings = [
+        UserRepository::class => UserRepositoryCore::class,
+    ];
 
     /**
      * Bootstrap services.
