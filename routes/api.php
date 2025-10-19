@@ -25,7 +25,6 @@ Route::prefix('v1')->group(function (){
      * |           ROTAS DO SISTEMA           |
      * +--------------------------------------+
      */
-
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     Route::controller(UserController::class)->group(function () {
