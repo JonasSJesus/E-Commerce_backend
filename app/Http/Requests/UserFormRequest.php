@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class UserFormRequest extends FormRequest
 {
@@ -25,7 +27,21 @@ class UserFormRequest extends FormRequest
         return [
             'name'     => 'required|string',
             'email'    => 'required|email',
-            'password' => 'required|min:4'
+            'password' => ['required', Password::min(8)
+                            ->mixedCase()
+                            ->numbers()
+                            ->symbols()
+                            ->letters()],
+            'phone'    => 'sometimes|regex:/^\(\d{2}\)\s9\s\d{4}-\d{4}$/'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'password'          => 'A senha deve ter pelo menos uma letra maiúscula, um número e um caractere especial.',
+            'password.required' => 'O campo senha é obrigatório',
+            'phone.regex'       => 'O telefone deve estar no formato (XX) 9 XXXX-XXXX.',
         ];
     }
 }

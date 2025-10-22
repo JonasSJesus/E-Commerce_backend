@@ -1,24 +1,30 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
+use App\Http\Requests\AuthFormRequest;
+use App\Services\AuthService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
-    {
-        $validatedCredentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:4'
-        ]);
+    private AuthService $authService;
 
-        if(!$token = Auth::attempt($validatedCredentials)) {
-            throw new AuthenticationException();
-        }
+    /**
+     * @param AuthService $authServicel
+     */
+    public function __construct(AuthService $authServicel)
+    {
+        $this->authService = $authServicel;
+    }
+
+    public function login(AuthFormRequest $request)
+    {
+        $validatedCredentials = $request->validated();
+
+        $token = $this->authService->login($validatedCredentials);
 
         return $this->respondWithToken($token);
     }
