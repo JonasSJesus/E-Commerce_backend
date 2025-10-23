@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories\User\Contracts;
 
@@ -7,14 +8,14 @@ use Illuminate\Support\Collection;
 
 interface UserRepository
 {
-    public function createUser(array $user);
+    public function createUser(array $user): User;
 
-    public function getUserById($id): User|null;
+    public function getUserById(int $id): User|null;
 
     /** @return Collection|null */
     public function getUsers(): Collection|null;
 
     public function updateUser(int $id, array $newProperties): User|null;
 
-    public function deleteUser($id): bool;
+    public function deleteUser(int $id): bool;
 }

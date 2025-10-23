@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Requests;
 
@@ -26,20 +27,21 @@ class UserFormRequest extends FormRequest
         return [
             'name'     => 'required|string',
             'email'    => 'required|email',
-            'password' => Password::min(8)
+            'password' => ['required', Password::min(8)
                             ->mixedCase()
                             ->numbers()
                             ->symbols()
-                            ->letters(),
-            'phone'    => 'regex:/^\(\d{2}\)\s9\s\d{4}-\d{4}$/'
+                            ->letters()],
+            'phone'    => 'sometimes|regex:/^\(\d{2}\)\s9\s\d{4}-\d{4}$/'
         ];
     }
 
     public function messages(): array
     {
         return [
-            'password' => 'A senha deve ter pelo menos uma letra maiúscula, um número e um caractere especial.',
-            'phone.regex' => 'O telefone deve estar no formato (XX) 9 XXXX-XXXX.'
+            'password'          => 'A senha deve ter pelo menos uma letra maiúscula, um número e um caractere especial.',
+            'password.required' => 'O campo senha é obrigatório',
+            'phone.regex'       => 'O telefone deve estar no formato (XX) 9 XXXX-XXXX.',
         ];
     }
 }
