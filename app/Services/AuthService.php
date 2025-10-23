@@ -11,8 +11,8 @@ class AuthService
 {
     public function login(array $credentials): bool|string
     {
-        if(!$token = Auth::attempt($credentials)) {
-            throw new AuthenticationException();
+        if (!$token = Auth::attempt($credentials)) {
+            throw new AuthenticationException('Credenciais invalidas');
         }
 
         return $token;

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         $this->createUser();
     }
 
-    private function createUser()
+    private function createUser(): void
     {
         $user = User::query();
 
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
         ]);
     }
 
-    private function createFakeUsers()
+    private function createFakeUsers(): void
     {
         User::factory();
     }
