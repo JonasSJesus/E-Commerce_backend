@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserFormRequest;
 use App\Models\User;
 use App\Repositories\User\Contracts\UserRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +25,7 @@ class UserController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $user = $this->repository->getUsers();
 
@@ -33,7 +35,7 @@ class UserController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserFormRequest $request)
+    public function store(UserFormRequest $request): JsonResponse
     {
         $credentials = $request->validated();
 
@@ -53,7 +55,7 @@ class UserController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         if ($user = $this->repository->getUserById($id)) {
             return response()->json([
@@ -72,7 +74,7 @@ class UserController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserFormRequest $request, int $id)
+    public function update(UserFormRequest $request, int $id): JsonResponse
     {
         $credentials = $request->validated();
 
@@ -92,7 +94,7 @@ class UserController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         if ($this->repository->deleteUser($id)){
             return response()->json([
