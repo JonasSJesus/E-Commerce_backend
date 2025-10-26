@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthFormRequest;
+use App\Http\Requests\UserFormRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -27,7 +27,31 @@ class AuthController extends Controller
 
         $token = $this->authService->login($validatedCredentials);
 
-        return $this->respondWithToken($token);
+        return $this->authService->respondWithToken($token);
+    }
+
+    public function register(UserFormRequest $request)
+    {
+        $credentials = $request->validated();
+
+        try {
+            $user = $this->authService->registerUser($credentials);
+
+            return response()->json([
+                "message" => "Usuário criado com sucesso!",
+                "access_token"   => "12903aklsmdi021nsd0f1nboijner", // Todo: Implementar token no retorno
+                "user"    => [
+                    "id"     => $user->id,
+                    "name"   => $user->name,
+                    "email"  => $user->email,
+                    "phone"  => $user->phone,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "error" => "erro ao criar o usuario: {$e->getMessage()}"
+            ]);
+        }
     }
 
     public function me(): JsonResponse
@@ -37,23 +61,13 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        Auth::logout();
+        $this->authService->logout();
 
         return response()->json(['message' => 'Deslogado com sucesso!']);
     }
 
     public function refresh(): JsonResponse
     {
-        return $this->respondWithToken(Auth::guard('api')->refresh());
-    }
-
-
-    protected function respondWithToken($token): JsonResponse
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60
-        ]);
+        return $this->authService->refreshToken();
     }
 }

@@ -4,11 +4,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserFormRequest;
-use App\Models\User;
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController
 {
@@ -30,26 +27,6 @@ class UserController
         $user = $this->repository->getUsers();
 
         return response()->json(["message" => $user]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(UserFormRequest $request): JsonResponse
-    {
-        $credentials = $request->validated();
-
-        try {
-            $user = $this->repository->createUser($credentials);
-
-            return response()->json([
-                "message" => "Usuário {$user->name} (id: {$user->id}) criado com sucesso!"
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "error" => "erro ao criar o usuario: {$e->getMessage()}"
-            ]);
-        }
     }
 
     /**
