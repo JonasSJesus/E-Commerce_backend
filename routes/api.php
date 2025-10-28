@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Authentication\AuthController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -35,7 +35,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
      */
     Route::middleware('auth:api')->group(function () {
 
-        Route::apiResource('users', UserController::class)->except(['store']);
+        Route::apiResource('user', UserController::class)->except(['store']);
 
         // Futuros recursos do e-commerce
         // Route::apiResource('products', ProductController::class);

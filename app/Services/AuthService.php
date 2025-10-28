@@ -31,7 +31,25 @@ class AuthService
 
     public function registerUser(array $credentials)
     {
-        return $this->userRepository->createUser($credentials);
+        $user = $this->userRepository->createUser($credentials);
+
+        $userCreated = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ];
+
+        $token = Auth::login($user);
+        $authCredentials = [
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => Auth::factory()->getTTL() * 60
+        ];
+
+        $response = collect($userCreated)->merge($authCredentials);
+
+        return $response;
     }
 
     public function logout()

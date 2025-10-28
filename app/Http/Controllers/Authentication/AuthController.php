@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Authentication;
 
 use App\Http\Requests\AuthFormRequest;
 use App\Http\Requests\UserFormRequest;
@@ -35,18 +35,9 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         try {
-            $user = $this->authService->registerUser($credentials);
+            $userData = $this->authService->registerUser($credentials);
 
-            return response()->json([
-                "message" => "Usuário criado com sucesso!",
-                "access_token"   => "12903aklsmdi021nsd0f1nboijner", // Todo: Implementar token no retorno
-                "user"    => [
-                    "id"     => $user->id,
-                    "name"   => $user->name,
-                    "email"  => $user->email,
-                    "phone"  => $user->phone,
-                ]
-            ]);
+            return response()->json($userData);
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "erro ao criar o usuario: {$e->getMessage()}"
