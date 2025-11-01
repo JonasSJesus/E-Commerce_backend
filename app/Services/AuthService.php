@@ -6,8 +6,9 @@ namespace App\Services;
 
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class AuthService
 {
@@ -19,7 +20,11 @@ class AuthService
         $this->userRepository = $userRepository;
     }
 
-
+    /**
+     * @param array $credentials
+     * @return bool|string
+     * @throws AuthenticationException
+     */
     public function login(array $credentials): bool|string
     {
         if (!$token = Auth::attempt($credentials)) {
@@ -69,5 +74,20 @@ class AuthService
             'token_type' => 'Bearer',
             'expires_in' => Auth::factory()->getTTL() * 60
         ];
+    }
+
+    public function updateUserPwd(Request $request, int $userId): array
+    {
+        $validatedData = $request->validate([
+            'password' => ['required', Password::min(8)
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->letters()],
+        ]);
+
+        $user = $this->userRepository->updateUserPwd($userId, $validatedData['password']);
+
+        return $user->toArray();
     }
 }

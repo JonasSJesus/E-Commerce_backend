@@ -6,7 +6,9 @@ namespace App\Http\Controllers\Authentication;
 use App\Http\Requests\AuthFormRequest;
 use App\Http\Requests\UserFormRequest;
 use App\Services\AuthService;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class AuthController extends Controller
@@ -22,10 +24,17 @@ class AuthController extends Controller
     {
         $validatedCredentials = $request->validated();
 
-        $token = $this->authService->login($validatedCredentials);
-        $response = $this->authService->respondWithToken($token);
+        try {
+            $token = $this->authService->login($validatedCredentials);
+            $response = $this->authService->respondWithToken($token);
 
-        return response()->json($response);
+            return response()->json($response);
+        } catch (AuthenticationException $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+            ], 401);
+        }
+
     }
 
     public function register(UserFormRequest $request): JsonResponse
@@ -35,12 +44,27 @@ class AuthController extends Controller
         try {
             $userData = $this->authService->registerUser($credentials);
 
-            return response()->json($userData);
+            return response()->json($userData, 201);
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "erro ao criar o usuario: {$e->getMessage()}"
             ], 400);
         }
+    }
+
+    public function updatePassword(Request $request, int $id): JsonResponse
+    {
+        try {
+            $user = $this->authService->updateUserPwd($request, $id);
+
+            return response()->json($user);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                "error" => $e->getMessage()
+            ], 400);
+        }
+
     }
 
     public function me(): JsonResponse

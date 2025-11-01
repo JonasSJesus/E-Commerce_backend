@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Authentication\AuthController;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\Test\TestController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +27,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
             // Rotas protegidas de autenticação
             Route::middleware('auth:api')->group(function () {
+                Route::put('/update-pwd/{id}', 'updatePassword')->name('update.password');
                 Route::post('/logout', 'logout')->name('logout');
                 Route::get('/me', 'me')->name('me'); // Dados do usuário logado
             });
