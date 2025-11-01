@@ -52,12 +52,12 @@ class AuthService
         return $response;
     }
 
-    public function logout()
+    public function logout(): void
     {
-        return Auth::logout();
+        Auth::logout();
     }
 
-    public function refreshToken()
+    public function refreshToken(): JsonResponse
     {
         $newToken = Auth::refresh();
 
@@ -68,7 +68,7 @@ class AuthService
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
+            'token_type' => 'Bearer',
             'expires_in' => Auth::factory()->getTTL() * 60
         ]);
     }

@@ -9,11 +9,6 @@ abstract class BaseRepository
 {
     protected $modelClass;
 
-    public function __construct(Model $model)
-    {
-        $this->modelClass = $model;
-    }
-
     public function getQuery()
     {
         return $this->modelClass->newQuery();

@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $this->createUser();
+        $this->createFakeUsers();
     }
 
     private function createUser(): void
@@ -31,6 +32,6 @@ class UserSeeder extends Seeder
 
     private function createFakeUsers(): void
     {
-        User::factory();
+        User::factory()->count(5)->create();
     }
 }
