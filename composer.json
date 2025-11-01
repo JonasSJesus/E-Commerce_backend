@@ -11,6 +11,7 @@
         "filament/filament": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.15",
         "laravel/tinker": "^2.10.1",
         "league/fractal": "^0.20.2",
         "spatie/laravel-permission": "^6.22",
@@ -42,7 +43,7 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade 2>/dev/null || true"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
