@@ -24,9 +24,13 @@ class UserController
      */
     public function index(): JsonResponse
     {
-        $user = $this->repository->getUsers();
+        if ($user = $this->repository->getUsers()) {
+            return response()->json(["message" => $user]);
+        }
 
-        return response()->json(["message" => $user]);
+        return response()->json([
+            "error" => "Nenhum Recurso encontrado"
+        ], 404);
     }
 
     /**
@@ -44,7 +48,7 @@ class UserController
 
         return response()->json([
             "error" => "Usuario nao encontrado"
-        ]);
+        ], 404);
 
     }
 
@@ -64,7 +68,7 @@ class UserController
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "erro ao atualizar o usuario: {$e->getMessage()}"
-            ]);
+            ], 400);
         }
     }
 
@@ -79,6 +83,6 @@ class UserController
             ]);
         }
 
-        return response()->json(["error" => "nao foi possivel excluir este usuario"]);
+        return response()->json(["error" => "nao foi possivel excluir este usuario"], 400);
     }
 }

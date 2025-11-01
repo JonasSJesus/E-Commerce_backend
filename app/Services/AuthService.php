@@ -47,9 +47,7 @@ class AuthService
             'expires_in' => Auth::factory()->getTTL() * 60
         ];
 
-        $response = collect($userCreated)->merge($authCredentials);
-
-        return $response;
+        return collect($userCreated)->merge($authCredentials);
     }
 
     public function logout(): void
@@ -57,19 +55,19 @@ class AuthService
         Auth::logout();
     }
 
-    public function refreshToken(): JsonResponse
+    public function refreshToken(): array
     {
         $newToken = Auth::refresh();
 
         return $this->respondWithToken($newToken);
     }
 
-    public function respondWithToken($token): JsonResponse
+    public function respondWithToken($token): array
     {
-        return response()->json([
+        return [
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => Auth::factory()->getTTL() * 60
-        ]);
+        ];
     }
 }

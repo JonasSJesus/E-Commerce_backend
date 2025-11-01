@@ -13,9 +13,6 @@ class AuthController extends Controller
 {
     private AuthService $authService;
 
-    /**
-     * @param AuthService $authService
-     */
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
@@ -26,11 +23,12 @@ class AuthController extends Controller
         $validatedCredentials = $request->validated();
 
         $token = $this->authService->login($validatedCredentials);
+        $response = $this->authService->respondWithToken($token);
 
-        return $this->authService->respondWithToken($token);
+        return response()->json($response);
     }
 
-    public function register(UserFormRequest $request)
+    public function register(UserFormRequest $request): JsonResponse
     {
         $credentials = $request->validated();
 
@@ -41,7 +39,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "erro ao criar o usuario: {$e->getMessage()}"
-            ]);
+            ], 400);
         }
     }
 
@@ -59,6 +57,8 @@ class AuthController extends Controller
 
     public function refresh(): JsonResponse
     {
-        return $this->authService->refreshToken();
+        $response = $this->authService->refreshToken();
+
+        return response()->json($response);
     }
 }
