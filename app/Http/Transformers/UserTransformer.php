@@ -8,8 +8,14 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract
 {
-    public function transform(User|array $user)
+    public function transform(User $user): array
     {
-        return [];
+        return [
+            "id"    => $user->id,
+            "nome"  => $user->name,
+            "email" => $user->email,
+            "fone"  => $user->phone,
+            "ativo" => $user->active
+        ];
     }
 }

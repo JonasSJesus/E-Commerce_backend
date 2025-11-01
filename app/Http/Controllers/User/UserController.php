@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Base\ApiController;
 use App\Http\Requests\UserFormRequest;
+use App\Http\Transformers\UserTransformer;
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UserController
+class UserController extends ApiController
 {
     private UserRepository $repository;
 
@@ -24,13 +27,13 @@ class UserController
      */
     public function index(): JsonResponse
     {
-        if ($user = $this->repository->getUsers()) {
-            return response()->json(["message" => $user]);
+        $user = $this->repository->getUsers();
+
+        if (!$user) {
+            throw new NotFoundHttpException("Nenhum Recurso encontrado");
         }
 
-        return response()->json([
-            "error" => "Nenhum Recurso encontrado"
-        ], 404);
+        return $this->responseCollection($user, new UserTransformer);
     }
 
     /**
@@ -38,18 +41,13 @@ class UserController
      */
     public function show(string $id): JsonResponse
     {
-        if ($user = $this->repository->getUserById($id)) {
-            return response()->json([
-                "message" => [
-                    "user" => $user
-                ]
-            ]);
+        $user = $this->repository->getUserById($id);
+
+        if (!$user) {
+            throw new NotFoundHttpException("Nenhum Recurso encontrado");
         }
 
-        return response()->json([
-            "error" => "Usuario nao encontrado"
-        ], 404);
-
+        return $this->responseItem($user, new UserTransformer);
     }
 
     /**
