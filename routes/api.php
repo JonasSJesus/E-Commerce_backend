@@ -14,15 +14,16 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('v1')->name('api.v1.')->group(function () {
 
-    // Autenticação
     Route::controller(AuthController::class)
         ->prefix('auth')
         ->middleware('throttle:10,1')
         ->name('auth.')
         ->group(function () {
+
+            // Autenticação
             Route::post('/register', 'register')->name('register');
             Route::post('/login', 'login')->name('login');
-            Route::post('/refresh', 'refresh')->name('refresh'); // Se você tiver
+            Route::post('/refresh', 'refresh')->name('refresh');
 
             // Rotas protegidas de autenticação
             Route::middleware('auth:api')->group(function () {
@@ -36,7 +37,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
      * |        ROTAS PROTEGIDAS (v1)         |
      * +--------------------------------------+
      */
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:api')->name('private.')->group(function () {
 
         Route::apiResource('user', UserController::class)->except(['store']);
 
