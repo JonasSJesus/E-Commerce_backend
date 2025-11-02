@@ -53,6 +53,12 @@ class AuthController extends Controller
 
     public function updatePassword(Request $request, int $id): JsonResponse
     {
+        if (!auth()->user()->isUserId($id)) {
+            return response()->json([
+                "error" => "Você não tem permissão para atualizar essa senha"
+            ], 403);
+        }
+
         try {
             $user = $this->authService->updateUserPwd($request, $id);
 
@@ -78,9 +84,9 @@ class AuthController extends Controller
         return response()->json(['message' => 'Deslogado com sucesso!']);
     }
 
-    public function refresh(): JsonResponse
+    public function refresh(Request $request): JsonResponse
     {
-        $response = $this->authService->refreshToken();
+        $response = $this->authService->refreshToken($request);
 
         return response()->json($response);
     }

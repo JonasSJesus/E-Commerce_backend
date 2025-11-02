@@ -17,12 +17,9 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 {
     protected $modelClass = User::class;
 
-    private Builder $query;
-
     public function __construct(User $model)
     {
         $this->modelClass = $model;
-        $this->query      = $this->getQuery();
     }
 
     public function createUser(array $user): User
@@ -31,7 +28,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
             throw new \Exception("Email já está em uso!");
         }
 
-        return $this->query->create([
+        $query = $this->getQuery();
+        return $query->create([
             'name'      => $user['name'],
             'email'     => $user['email'],
             'password'  => Hash::make($user['password']),
@@ -42,7 +40,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function getUserById($id): User|null
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             return $user;
         }
 
@@ -51,7 +50,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function getUsers(): Collection|null
     {
-        if ($user = $this->query->get()) {
+        $query = $this->getQuery();
+        if ($user = $query->get()) {
             return $user;
         }
 
@@ -60,7 +60,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function updateUser(int $id, array $newProperties): User|null
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             $user->update([
                 'name'      => $newProperties['name'],
                 'email'     => $newProperties['email'],
@@ -75,16 +76,22 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function deleteUser($id): bool
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             return $user->deleteOrFail();
         }
 
         return false;
     }
 
-    public function updateUserPwd(int $id, string $password): false|User
+    public function updateUserPwd(int $id, string $password): ?User
     {
-        $user = $this->query->findOrFail($id);
+        $query = $this->getQuery();
+        $user = $query->find($id);
+
+        if (!$user) {
+            return null;
+        }
 
         $user->update([
             'password' => Hash::make($password),
@@ -95,7 +102,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function findByEmail(string $email): User|null
     {
-        $query = $this->query->where('email', $email);
+        $query = $this->getQuery();
+        $query->where('email', $email);
         $user = $query->get();
 
         if ($user) {

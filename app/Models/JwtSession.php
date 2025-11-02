@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property string $ip_address
  * @property string $user_agent
- * @property string $last_activity
+ * @property \Illuminate\Support\Carbon $last_activity
+ * @property \Illuminate\Support\Carbon $expires_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtSession newModelQuery()
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtSession whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtSession whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtSession whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtSession whereExpiresAt($value)
  * @mixin \Eloquent
  */
 class JwtSession extends Model
@@ -41,9 +43,10 @@ class JwtSession extends Model
     protected function casts(): array
     {
         return [
-            'lat_activity'      => 'datetime',
+            'last_activity'     => 'datetime',
             'created_at'        => 'datetime',
             'updated_at'        => 'datetime',
+            'expires_at'        => 'datetime',
         ];
     }
 

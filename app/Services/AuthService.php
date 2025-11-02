@@ -8,6 +8,7 @@ use App\Repositories\Jwt\Contracts\JwtSessionRepository;
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
@@ -67,9 +68,17 @@ class AuthService
         Auth::logout();
     }
 
-    public function refreshToken(): array
+    public function refreshToken(Request $request): array
     {
+        $previousPayload = Auth::payload();
+        $oldJti = $previousPayload->get('jti');
+
         $newToken = Auth::refresh();
+
+        $this->sessionRepository->deleteSession($oldJti);
+
+        Auth::setToken($newToken);
+        $this->saveSession($request);
 
         return $this->prepareToken($newToken);
     }
@@ -106,6 +115,7 @@ class AuthService
     {
         $user = auth()->user();
         $payload = Auth::payload();
+        $expiresDate = Carbon::createFromTimestamp($payload->get('exp'))->toDateTimeString();
 
         $this->sessionRepository->createSession([
             'user_id' => $user->id,
@@ -113,7 +123,7 @@ class AuthService
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'last_activity' => now(),
-            'expires_at' => date('d/m/Y H:i:s', $payload->get('exp'))
+            'expires_at' => $expiresDate,
         ]);
     }
 }

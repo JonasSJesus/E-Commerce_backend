@@ -19,7 +19,7 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
-            - './docker/aliases/.bash_aliases:/sail/.bash_aliases'
+            - './docker/aliases/.bash_aliases:/~/.bash_aliases'
         networks:
             - sail
         depends_on:
@@ -35,7 +35,7 @@ services:
             POSTGRES_USER: '${DB_USERNAME}'
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
-            - '~/sail-pgsql:/var/lib/postgresql/data'
+            - 'sail-pgsql:/var/lib/postgresql/data'
             - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - sail

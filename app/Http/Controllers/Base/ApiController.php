@@ -16,6 +16,7 @@ abstract class ApiController
     public function responseCollection(array|LaravelCollection $data, TransformerAbstract $transformer, array $includes = []): JsonResponse
     {
         $fractal = new Manager();
+        $fractal->parseIncludes($includes);
         $resource = new FractalCollection($data, $transformer);
         $response = $fractal->createData($resource)->toArray();
 
@@ -25,6 +26,7 @@ abstract class ApiController
     public function responseItem(array|LaravelCollection|Model $data, TransformerAbstract $transformer, array $includes = []): JsonResponse
     {
         $fractal = new Manager();
+        $fractal->parseIncludes($includes);
         $resource = new Item($data, $transformer);
         $response = $fractal->createData($resource)->toArray();
 

@@ -2,17 +2,16 @@
 
 namespace Tests\Feature\Authentication;
 
+use App\Models\JwtSession;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testUserCanRegister()
     {
+        // Arrange
         $input = [
             "name"      => fake()->name(),
             "email"     => fake()->email(),
@@ -31,21 +30,59 @@ class AuthTest extends TestCase
         ]);
     }
 
-    public function testUserCanLogin()
+    public function testUserShouldNotUpdateAnotherUserPassword()
     {
-        // Prepare
-        $response = $this->makeLogin();
+        // Arrange
+        $userA = User::factory()->create();
+
+        // Act
+        $this->makeLogin();
+        $response = $this->put(route('api.v1.auth.private.update.password', $userA->id), [
+            "password" => "ShouldNotUpdate"
+        ]);
+
+        // Assert
+        $response->assertForbidden();
+    }
+
+    public function testRefreshTokenShouldDeleteOldSession()
+    {
+        // Arrange
+        $this->makeLogin();
+        $oldJti = auth()->payload()->get('jti');
+
+        // Act
+        $response = $this->post(route('api.v1.auth.private.refresh'));
+        $newJti = auth()->payload()->get('jti');
 
         // Assert
         $response->assertOk();
-        $this->assertDatabaseHas('jwt_sessions', [
-            'last_activity' => now()
+        $this->assertNotEquals($oldJti, $newJti);
+        $this->assertDatabaseMissing('jwt_sessions', [
+            'token_id' => $oldJti
         ]);
+        $this->assertDatabaseHas('jwt_sessions', [
+            'token_id' => $newJti
+        ]);
+    }
+
+    public function testUserCanLogin()
+    {
+        // Arrange & Act
+        $response = $this->makeLogin();
+        $session = JwtSession::first();
+
+        // Assert
+        $response->assertOk();
+        $this->assertDatabaseCount('jwt_sessions', 1);
+
+        $this->assertNotNull($session);
+        $this->assertTrue($session->last_activity->isToday());
     }
 
     public function testUserCannotLoginWithUnvalidCredentials()
     {
-        // Prepare
+        // Arrange
         $user = User::factory()->create();
         $payload = [
             'email' => $user->email,
@@ -61,12 +98,12 @@ class AuthTest extends TestCase
 
     public function testUserCanLogout()
     {
-        // Prepare
+        // Arrange
         $response = $this->makeLogin();
         $token = json_decode($response->content())->access_token;
 
         // Act
-        $response = $this->delete(route('api.v1.auth.logout'), [
+        $response = $this->delete(route('api.v1.auth.private.logout'), [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
         ]);
@@ -78,10 +115,12 @@ class AuthTest extends TestCase
     public function testUserCannotAccessPrivateRoutes()
     {
         // Act
-        $response = $this->get(route('api.v1.private.user.index'));
+        $responseResource = $this->get(route('api.v1.private.user.index'));
+        $responseAuthPrivate = $this->post(route('api.v1.auth.private.refresh'));
 
         // Assert
-        $response->assertUnauthorized();
+        $responseResource->assertUnauthorized();
+        $responseAuthPrivate->assertUnauthorized();
     }
 
     private function makeLogin(): TestResponse

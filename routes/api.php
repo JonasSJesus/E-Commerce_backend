@@ -24,13 +24,15 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             // Registro e Login
             Route::post('/register', 'register')->name('register');
             Route::post('/login', 'login')->name('login');
-            Route::post('/refresh', 'refresh')->name('refresh');
 
             // Rotas protegidas de autenticação
-            Route::middleware(['auth:api', 'validaSessaoJwt'])->group(function () {
-                Route::put('/update-pwd/{id}', 'updatePassword')->name('update.password');
-                Route::delete('/logout', 'logout')->name('logout');
-                Route::get('/me', 'me')->name('me'); // Dados do usuário logado
+            Route::middleware(['auth:api', 'validaSessaoJwt'])
+                ->name('private.')
+                ->group(function () {
+                    Route::post('/refresh', 'refresh')->name('refresh');
+                    Route::put('/update-pwd/{id}', 'updatePassword')->name('update.password');
+                    Route::delete('/logout', 'logout')->name('logout');
+                    Route::get('/me', 'me')->name('me'); // Dados do usuário logado
             });
     });
 

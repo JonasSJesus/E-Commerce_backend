@@ -111,4 +111,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function isUserId(int $id)
+    {
+        return $this->id === $id;
+    }
 }
