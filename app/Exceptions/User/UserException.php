@@ -7,7 +7,7 @@ use Exception;
 
 class UserException extends Exception
 {
-    public static function userNotFound()
+    public static function userNotFound(): self
     {
         return new self("Nenhum usuário encontrado");
     }
