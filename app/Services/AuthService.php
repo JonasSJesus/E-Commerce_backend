@@ -49,7 +49,7 @@ class AuthService
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'phone' => $user->phone,
+            'phone' => $user->phone ?? null,
         ];
 
         $token = Auth::login($user);

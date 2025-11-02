@@ -35,7 +35,7 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
             'name'      => $user['name'],
             'email'     => $user['email'],
             'password'  => Hash::make($user['password']),
-            'phone'     => $user['phone']
+            'phone'     => $user['phone'] ?? null
         ]);
     }
 
