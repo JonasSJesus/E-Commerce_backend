@@ -14,21 +14,22 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('v1')->name('api.v1.')->group(function () {
 
+    /** Rotas De Autenticação */
     Route::controller(AuthController::class)
         ->prefix('auth')
         ->middleware('throttle:10,1')
         ->name('auth.')
         ->group(function () {
 
-            // Autenticação
+            // Registro e Login
             Route::post('/register', 'register')->name('register');
             Route::post('/login', 'login')->name('login');
             Route::post('/refresh', 'refresh')->name('refresh');
 
             // Rotas protegidas de autenticação
-            Route::middleware('auth:api')->group(function () {
+            Route::middleware(['auth:api', 'validaSessaoJwt'])->group(function () {
                 Route::put('/update-pwd/{id}', 'updatePassword')->name('update.password');
-                Route::post('/logout', 'logout')->name('logout');
+                Route::delete('/logout', 'logout')->name('logout');
                 Route::get('/me', 'me')->name('me'); // Dados do usuário logado
             });
     });
@@ -38,7 +39,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
      * |        ROTAS PROTEGIDAS (v1)         |
      * +--------------------------------------+
      */
-    Route::middleware('auth:api')->name('private.')->group(function () {
+    Route::middleware(['auth:api', 'validaSessaoJwt'])->name('private.')->group(function () {
 
         Route::apiResource('user', UserController::class)->except(['store']);
 
@@ -52,12 +53,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 /*
  * +--------------------------------------+
  * |           ROTAS DE TESTE             |
+ * | Remover em produção ou proteger com  |
+ * |       middleware de ambiente         |
  * +--------------------------------------+
- * Remover em produção ou proteger com
- * middleware de ambiente
  */
 if (config('app.env') !== 'production') {
     Route::prefix('test')->middleware('auth:api')->group(function () {
         Route::get('/', [TestController::class, 'test'])->name('test.route');
+        Route::post('/', [TestController::class, 'test'])->name('test.route');
+        Route::put('/', [TestController::class, 'test'])->name('test.route');
     });
 }

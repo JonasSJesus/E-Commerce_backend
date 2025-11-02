@@ -27,6 +27,10 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function createUser(array $user): User
     {
+        if ($this->findByEmail($user['email'])) {
+            throw new \Exception("Email já está em uso!");
+        }
+
         return $this->query->create([
             'name'      => $user['name'],
             'email'     => $user['email'],
@@ -87,5 +91,17 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
         ]);
 
         return $user;
+    }
+
+    public function findByEmail(string $email): User|null
+    {
+        $query = $this->query->where('email', $email);
+        $user = $query->get();
+
+        if ($user) {
+            return $user->first();
+        }
+
+        return null;
     }
 }

@@ -4,37 +4,44 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repositories\Jwt\Contracts\JwtSessionRepository;
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
 class AuthService
 {
-
     private UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    private JwtSessionRepository $sessionRepository;
+
+    public function __construct(UserRepository $userRepository, JwtSessionRepository $sessionRepository)
     {
         $this->userRepository = $userRepository;
+        $this->sessionRepository = $sessionRepository;
     }
 
     /**
      * @param array $credentials
-     * @return bool|string
+     * @param Request $request
+     * @return array
      * @throws AuthenticationException
      */
-    public function login(array $credentials): bool|string
+    public function login(array $credentials, Request $request): array
     {
         if (!$token = Auth::attempt($credentials)) {
             throw new AuthenticationException('Credenciais invalidas');
         }
 
-        return $token;
+        $this->saveSession($request);
+
+        return $this->prepareToken($token);
     }
 
-    public function registerUser(array $credentials)
+    public function registerUser(array $credentials): Collection
     {
         $user = $this->userRepository->createUser($credentials);
 
@@ -46,17 +53,17 @@ class AuthService
         ];
 
         $token = Auth::login($user);
-        $authCredentials = [
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60
-        ];
+        $authCredentials = $this->prepareToken($token);
 
         return collect($userCreated)->merge($authCredentials);
     }
 
     public function logout(): void
     {
+        $tokenId = Auth::payload()->get('jti');
+
+        $this->sessionRepository->deleteSession($tokenId);
+
         Auth::logout();
     }
 
@@ -64,10 +71,10 @@ class AuthService
     {
         $newToken = Auth::refresh();
 
-        return $this->respondWithToken($newToken);
+        return $this->prepareToken($newToken);
     }
 
-    public function respondWithToken($token): array
+    private function prepareToken($token): array
     {
         return [
             'access_token' => $token,
@@ -89,5 +96,24 @@ class AuthService
         $user = $this->userRepository->updateUserPwd($userId, $validatedData['password']);
 
         return $user->toArray();
+    }
+
+    /**
+     * @param Request $request
+     * @return void
+     */
+    public function saveSession(Request $request): void
+    {
+        $user = auth()->user();
+        $payload = Auth::payload();
+
+        $this->sessionRepository->createSession([
+            'user_id' => $user->id,
+            'token_id' => $payload->get('jti'),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'last_activity' => now(),
+            'expires_at' => date('d/m/Y H:i:s', $payload->get('exp'))
+        ]);
     }
 }

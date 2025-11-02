@@ -12,6 +12,8 @@ interface UserRepository
 
     public function getUserById(int $id): User|null;
 
+    public function findByEmail(string $email): User|null;
+
     /** @return Collection|null */
     public function getUsers(): Collection|null;
 

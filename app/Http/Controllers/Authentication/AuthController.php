@@ -25,8 +25,7 @@ class AuthController extends Controller
         $validatedCredentials = $request->validated();
 
         try {
-            $token = $this->authService->login($validatedCredentials);
-            $response = $this->authService->respondWithToken($token);
+            $response = $this->authService->login($validatedCredentials, $request);
 
             return response()->json($response);
         } catch (AuthenticationException $e) {
