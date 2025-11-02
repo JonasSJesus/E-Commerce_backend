@@ -27,4 +27,6 @@ Thumbs.db
 /public/css/filament/
 /public/fonts/filament/
 
+/app/Http/Controllers/Test/TestController.php
+
 _ide_helper.php

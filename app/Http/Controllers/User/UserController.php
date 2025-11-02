@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Base\ApiController;
 use App\Http\Requests\UserFormRequest;
-use App\Models\User;
+use App\Http\Transformers\UserTransformer;
 use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UserController
+class UserController extends ApiController
 {
     private UserRepository $repository;
 
@@ -29,27 +29,11 @@ class UserController
     {
         $user = $this->repository->getUsers();
 
-        return response()->json(["message" => $user]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(UserFormRequest $request): JsonResponse
-    {
-        $credentials = $request->validated();
-
-        try {
-            $user = $this->repository->createUser($credentials);
-
-            return response()->json([
-                "message" => "Usuário {$user->name} (id: {$user->id}) criado com sucesso!"
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "error" => "erro ao criar o usuario: {$e->getMessage()}"
-            ]);
+        if (!$user) {
+            throw new NotFoundHttpException("Nenhum Recurso encontrado");
         }
+
+        return $this->responseCollection($user, new UserTransformer);
     }
 
     /**
@@ -57,18 +41,13 @@ class UserController
      */
     public function show(string $id): JsonResponse
     {
-        if ($user = $this->repository->getUserById($id)) {
-            return response()->json([
-                "message" => [
-                    "user" => $user
-                ]
-            ]);
+        $user = $this->repository->getUserById($id);
+
+        if (!$user) {
+            throw new NotFoundHttpException("Nenhum Recurso encontrado");
         }
 
-        return response()->json([
-            "error" => "Usuario nao encontrado"
-        ]);
-
+        return $this->responseItem($user, new UserTransformer);
     }
 
     /**
@@ -87,7 +66,7 @@ class UserController
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "erro ao atualizar o usuario: {$e->getMessage()}"
-            ]);
+            ], 400);
         }
     }
 
@@ -102,6 +81,6 @@ class UserController
             ]);
         }
 
-        return response()->json(["error" => "nao foi possivel excluir este usuario"]);
+        return response()->json(["error" => "nao foi possivel excluir este usuario"], 400);
     }
 }

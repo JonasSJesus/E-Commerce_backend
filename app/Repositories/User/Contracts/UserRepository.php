@@ -12,10 +12,14 @@ interface UserRepository
 
     public function getUserById(int $id): User|null;
 
+    public function findByEmail(string $email): User|null;
+
     /** @return Collection|null */
     public function getUsers(): Collection|null;
 
     public function updateUser(int $id, array $newProperties): User|null;
+
+    public function updateUserPwd(int $id, string $password): User;
 
     public function deleteUser(int $id): bool;
 }
