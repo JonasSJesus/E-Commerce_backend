@@ -23,16 +23,21 @@ class UserFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name'     => 'required|string',
             'email'    => 'required|email',
-            'password' => ['required', Password::min(8)
-                            ->mixedCase()
-                            ->numbers()
-                            ->symbols()
-                            ->letters()],
             'phone'    => 'sometimes|regex:/^\(\d{2}\)\s9\s\d{4}-\d{4}$/'
         ];
+
+        if ($this->isMethod('POST')) {
+            $rules['password'] = ['required', Password::min(8)
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->letters()];
+        }
+
+        return $rules;
     }
 
     public function messages(): array
