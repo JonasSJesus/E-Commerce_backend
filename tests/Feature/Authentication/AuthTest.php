@@ -36,9 +36,17 @@ class AuthTest extends TestCase
         $userA = User::factory()->create();
 
         // Act
-        $this->makeLogin();
-        $response = $this->put(route('api.v1.auth.private.update.password', $userA->id), [
-            "password" => "ShouldNotUpdate"
+        $responseLogin = $this->makeLogin();
+        $token = json_decode($responseLogin->content())->access_token;
+
+        $response = $this->put(
+            uri:     route('api.v1.auth.private.update.password', $userA->id),
+            data:    [
+                "password" => "ShouldNotUpdate"
+            ],
+            headers: [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json'
         ]);
 
         // Assert
@@ -48,11 +56,22 @@ class AuthTest extends TestCase
     public function testRefreshTokenShouldDeleteOldSession()
     {
         // Arrange
-        $this->makeLogin();
+        $responseLogin = $this->makeLogin();
+        $token = json_decode($responseLogin->content())->access_token;
+
         $oldJti = auth()->payload()->get('jti');
+        $this->assertDatabaseHas('jwt_sessions', [
+            'token_id' => $oldJti
+        ]);
 
         // Act
-        $response = $this->post(route('api.v1.auth.private.refresh'));
+        $response = $this->post(
+            uri:     route('api.v1.auth.private.refresh'),
+            headers: [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json'
+        ]);
+
         $newJti = auth()->payload()->get('jti');
 
         // Assert
@@ -85,7 +104,7 @@ class AuthTest extends TestCase
         // Arrange
         $user = User::factory()->create();
         $payload = [
-            'email' => $user->email,
+            'email'    => $user->email,
             'password' => 'SenhaErrada123'
         ];
 
@@ -105,7 +124,7 @@ class AuthTest extends TestCase
         // Act
         $response = $this->delete(route('api.v1.auth.private.logout'), [
             'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json'
+            'Accept'        => 'application/json'
         ]);
 
         // Assert

@@ -19,7 +19,7 @@ interface UserRepository
 
     public function updateUser(int $id, array $newProperties): User|null;
 
-    public function updateUserPwd(int $id, string $password): ?User;
+    public function updateUserPwd(int $id, string $password): User;
 
     public function deleteUser(int $id): bool;
 }

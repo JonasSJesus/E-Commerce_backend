@@ -55,7 +55,7 @@ class AuthController extends Controller
     {
         if (!auth()->user()->isUserId($id)) {
             return response()->json([
-                "error" => "Você não tem permissão para atualizar essa senha"
+                "error" => "Erro ao atualizar senha"
             ], 403);
         }
 

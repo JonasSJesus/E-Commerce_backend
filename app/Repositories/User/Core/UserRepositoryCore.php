@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace App\Repositories\User\Core;
 
+use App\Exceptions\User\UserException;
 use App\Models\User;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\User\Contracts\UserRepository;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,7 +26,7 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
     public function createUser(array $user): User
     {
         if ($this->findByEmail($user['email'])) {
-            throw new \Exception("Email já está em uso!");
+            throw UserException::emailAlreadyExists();
         }
 
         $query = $this->getQuery();
@@ -84,13 +85,13 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
         return false;
     }
 
-    public function updateUserPwd(int $id, string $password): ?User
+    public function updateUserPwd(int $id, string $password): User
     {
         $query = $this->getQuery();
         $user = $query->find($id);
 
         if (!$user) {
-            return null;
+            throw UserException::userNotFound();
         }
 
         $user->update([

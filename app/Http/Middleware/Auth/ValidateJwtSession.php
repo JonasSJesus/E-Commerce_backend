@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware\Auth;
 
 use App\Repositories\Jwt\Contracts\JwtSessionRepository;
@@ -35,7 +37,7 @@ class ValidateJwtSession
         }
 
         if ($session->ip_address !== $request->ip()) {
-            $session->delete();
+            $this->sessionRepository->deleteSession($session->token_id);
 
             Auth::logout();
 
