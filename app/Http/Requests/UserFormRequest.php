@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
 class UserFormRequest extends FormRequest
@@ -20,20 +19,25 @@ class UserFormRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name'     => 'required|string',
             'email'    => 'required|email',
-            'password' => ['required', Password::min(8)
-                            ->mixedCase()
-                            ->numbers()
-                            ->symbols()
-                            ->letters()],
             'phone'    => 'sometimes|regex:/^\(\d{2}\)\s9\s\d{4}-\d{4}$/'
         ];
+
+        if ($this->isMethod('POST')) {
+            $rules['password'] = ['required', Password::min(8)
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->letters()];
+        }
+
+        return $rules;
     }
 
     public function messages(): array

@@ -3,43 +3,46 @@ declare(strict_types=1);
 
 namespace App\Repositories\User\Core;
 
+use App\Exceptions\User\UserException;
 use App\Models\User;
-use App\Repositories\BaseRepository;
+use App\Repositories\Base\BaseRepository;
 use App\Repositories\User\Contracts\UserRepository;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @extends BaseRepository<User>
  */
 class UserRepositoryCore extends BaseRepository implements UserRepository
 {
-    protected $modelClass;
-
-    private Builder $query;
+    protected $modelClass = User::class;
 
     public function __construct(User $model)
     {
-        parent::__construct($model);
-        $this->query = $this->getQuery();
+        $this->modelClass = $model;
     }
 
     public function createUser(array $user): User
     {
-        return $this->query->create([
+        if ($this->findByEmail($user['email'])) {
+            throw UserException::emailAlreadyExists();
+        }
+
+        $query = $this->getQuery();
+        return $query->create([
             'name'      => $user['name'],
             'email'     => $user['email'],
-            'password'  => $user['password'],
-            'role'      => "customer",
-            'phone'     => $user['phone']
+            'password'  => Hash::make($user['password']),
+            'phone'     => $user['phone'] ?? null
         ]);
     }
 
 
     public function getUserById($id): User|null
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             return $user;
         }
 
@@ -48,7 +51,8 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function getUsers(): Collection|null
     {
-        if ($user = $this->query->get()) {
+        $query = $this->getQuery();
+        if ($user = $query->get()) {
             return $user;
         }
 
@@ -57,11 +61,11 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function updateUser(int $id, array $newProperties): User|null
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             $user->update([
                 'name'      => $newProperties['name'],
                 'email'     => $newProperties['email'],
-                'password'  => $newProperties['password'],
                 'phone'     => $newProperties['phone']
             ]);
 
@@ -73,10 +77,40 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
 
     public function deleteUser($id): bool
     {
-        if ($user = $this->query->find($id)) {
+        $query = $this->getQuery();
+        if ($user = $query->find($id)) {
             return $user->deleteOrFail();
         }
 
         return false;
+    }
+
+    public function updateUserPwd(int $id, string $password): User
+    {
+        $query = $this->getQuery();
+        $user = $query->find($id);
+
+        if (!$user) {
+            throw UserException::userNotFound();
+        }
+
+        $user->update([
+            'password' => Hash::make($password),
+        ]);
+
+        return $user;
+    }
+
+    public function findByEmail(string $email): User|null
+    {
+        $query = $this->getQuery();
+        $query->where('email', $email);
+        $user = $query->get();
+
+        if ($user) {
+            return $user->first();
+        }
+
+        return null;
     }
 }

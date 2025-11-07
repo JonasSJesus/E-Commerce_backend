@@ -1,42 +1,68 @@
 <?php
 declare(strict_types=1);
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TestController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Authentication\AuthController;
+use App\Http\Controllers\Test\TestController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 
 /*
  * +--------------------------------------+
- * |           ROTAS DE TESTES            |
+ * |        ROTAS PÚBLICAS (v1)           |
  * +--------------------------------------+
  */
-Route::prefix('v1')->group(function (){
-    Route::middleware('auth:api')
-        ->group(function () {
-            Route::get('/test', [TestController::class, 'test']);
-        }
-        )->name('test.route');
+Route::prefix('v1')->name('api.v1.')->group(function () {
 
+    /** Rotas De Autenticação */
+    Route::controller(AuthController::class)
+        ->prefix('auth')
+        ->middleware('throttle:10,1')
+        ->name('auth.')
+        ->group(function () {
+
+            // Registro e Login
+            Route::post('/register', 'register')->name('register');
+            Route::post('/login', 'login')->name('login');
+
+            // Rotas protegidas de autenticação
+            Route::middleware(['auth:api', 'validaSessaoJwt'])
+                ->name('private.')
+                ->group(function () {
+                    Route::post('/refresh', 'refresh')->name('refresh');
+                    Route::put('/update-pwd/{id}', 'updatePassword')->name('update.password');
+                    Route::delete('/logout', 'logout')->name('logout');
+                    Route::get('/me', 'me')->name('me'); // Dados do usuário logado
+            });
+    });
 
     /*
      * +--------------------------------------+
-     * |           ROTAS DO SISTEMA           |
+     * |        ROTAS PROTEGIDAS (v1)         |
      * +--------------------------------------+
      */
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::middleware(['auth:api', 'validaSessaoJwt'])->name('private.')->group(function () {
 
-    Route::controller(UserController::class)->group(function () {
-            Route::post('/user', 'store');
+        Route::apiResource('user', UserController::class)->except(['store']);
 
-            Route::middleware('auth:api')->group(function () {
-                Route::get('/user', 'index');
-                Route::get('/user/{id}', 'show');
-                Route::put('/user/{id}', 'update');
-                Route::delete('/user/{id}', 'destroy');
-            });
-        });
-
+        // Futuros recursos do e-commerce
+        // Route::apiResource('products', ProductController::class);
+        // Route::apiResource('categories', CategoryController::class);
+        // Route::apiResource('orders', OrderController::class);
+    });
 });
+
+/*
+ * +--------------------------------------+
+ * |           ROTAS DE TESTE             |
+ * | Remover em produção ou proteger com  |
+ * |       middleware de ambiente         |
+ * +--------------------------------------+
+ */
+if (config('app.env') !== 'production') {
+    Route::prefix('test')->middleware('auth:api')->group(function () {
+        Route::get('/', [TestController::class, 'test'])->name('test.route');
+        Route::post('/', [TestController::class, 'test'])->name('test.route');
+        Route::put('/', [TestController::class, 'test'])->name('test.route');
+    });
+}
