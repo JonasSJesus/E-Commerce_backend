@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-class AuthTest extends TestCase
+class HttpAuthTest extends TestCase
 {
     public function testUserCanRegister()
     {

@@ -44,9 +44,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::middleware(['auth:api', 'validaSessaoJwt'])->name('private.')->group(function () {
 
         Route::apiResource('user', UserController::class)->except(['store']);
+        Route::apiResource('products', ProductController::class);
 
         // Futuros recursos do e-commerce
-        // Route::apiResource('products', ProductController::class);
         // Route::apiResource('categories', CategoryController::class);
         // Route::apiResource('orders', OrderController::class);
     });
