@@ -17,9 +17,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description');
             $table->string('image');
-            $table->unsignedBigInteger('parent_id');
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->boolean('active')->default(true);
-//            $table->integer('display_order');
             $table->timestamps();
         });
     }

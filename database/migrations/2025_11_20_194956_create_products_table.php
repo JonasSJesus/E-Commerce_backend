@@ -16,16 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->text('short_description');
             $table->decimal('price', 10, 2);
             $table->decimal('cost_price', 10, 2);
             $table->integer('stock_quantity');
             $table->integer('low_stock_threshold')->default(10);
-            $table->decimal('weight');
             $table->boolean('active')->default(true);
-            $table->boolean('featured');
-            $table->foreignId('category_id')->constrained();
-            $table->json('specifications');
+            $table->foreignId('category_id')->constrained('categories', 'id');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\Feature\Authentication;
 
@@ -122,7 +123,7 @@ class HttpAuthTest extends TestCase
         $token = json_decode($response->content())->access_token;
 
         // Act
-        $response = $this->delete(route('api.v1.auth.private.logout'), [
+        $response = $this->delete(uri: route('api.v1.auth.private.logout'), headers:[
             'Authorization' => 'Bearer ' . $token,
             'Accept'        => 'application/json'
         ]);

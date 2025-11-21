@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -31,6 +33,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class JwtSession extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'token_id',
         'user_id',

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Authentication\AuthController;
+use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Test\TestController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
