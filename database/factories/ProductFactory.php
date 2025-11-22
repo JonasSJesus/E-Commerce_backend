@@ -22,6 +22,7 @@ class ProductFactory extends Factory
             'cost_price'          => $this->faker->randomFloat(2, 0.50, 50000),
             'stock_quantity'      => $this->faker->numberBetween(0, 100),
             'low_stock_threshold' => $this->faker->numberBetween(1, 10),
+            'active'              => true,
             'category_id'         => null,
             'created_at'          => Carbon::now(),
         ];

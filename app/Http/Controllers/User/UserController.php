@@ -61,7 +61,7 @@ class UserController extends ApiController
             $user = $this->repository->updateUser($id, $credentials);
 
             return response()->json([
-                "message" => "Usuário {$user->name} (id: {$user->id}) atualizado com sucesso!"
+                "message" => "Usuario {$user->name} (id: {$user->id}) atualizado com sucesso!"
             ]);
         } catch (\Exception $e) {
             return response()->json([

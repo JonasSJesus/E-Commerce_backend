@@ -13,9 +13,11 @@ abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
-    protected function authUser(): TestCase
+    protected function authUser(?User $user = null): TestCase
     {
-        $user = User::factory()->createOne();
+        if (!$user){
+            $user = User::factory()->createOne();
+        }
         $token = JWTAuth::fromUser($user);
 
         // Obter o payload do token para extrair o JTI

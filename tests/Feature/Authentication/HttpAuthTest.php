@@ -10,7 +10,12 @@ use Tests\TestCase;
 
 class HttpAuthTest extends TestCase
 {
-    public function testUserCanRegister()
+    public function test_user_can_access_me_endpoint()
+    {
+        // Todo: Implementar test para o fluxo de buscar os dados do usuario logado
+    }
+
+    public function test_user_can_register()
     {
         // Arrange
         $input = [
@@ -31,7 +36,7 @@ class HttpAuthTest extends TestCase
         ]);
     }
 
-    public function testUserShouldNotUpdateAnotherUserPassword()
+    public function test_user_should_not_update_another_user_password()
     {
         // Arrange
         $userA = User::factory()->create();
@@ -54,7 +59,7 @@ class HttpAuthTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function testRefreshTokenShouldDeleteOldSession()
+    public function test_refresh_token_should_delete_old_session()
     {
         // Arrange
         $responseLogin = $this->makeLogin();
@@ -86,7 +91,7 @@ class HttpAuthTest extends TestCase
         ]);
     }
 
-    public function testUserCanLogin()
+    public function test_user_can_login()
     {
         // Arrange & Act
         $response = $this->makeLogin();
@@ -100,7 +105,7 @@ class HttpAuthTest extends TestCase
         $this->assertTrue($session->last_activity->isToday());
     }
 
-    public function testUserCannotLoginWithUnvalidCredentials()
+    public function test_user_cannot_login_with_invalid_credentials()
     {
         // Arrange
         $user = User::factory()->create();
@@ -116,7 +121,7 @@ class HttpAuthTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function testUserCanLogout()
+    public function test_user_can_logout()
     {
         // Arrange
         $response = $this->makeLogin();
@@ -132,7 +137,7 @@ class HttpAuthTest extends TestCase
         $response->assertOk();
     }
 
-    public function testUserCannotAccessPrivateRoutes()
+    public function test_user_cannot_access_private_routes()
     {
         // Act
         $responseResource = $this->get(route('api.v1.private.user.index'));
