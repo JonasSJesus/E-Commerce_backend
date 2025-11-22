@@ -27,7 +27,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('/login', 'login')->name('login');
 
             // Rotas protegidas de autenticação
-            Route::middleware(['auth:api', 'validaSessaoJwt'])
+            Route::middleware(['auth:api', 'validateJwtSession'])
                 ->name('private.')
                 ->group(function () {
                     Route::post('/refresh', 'refresh')->name('refresh');
@@ -42,7 +42,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
      * |        ROTAS PROTEGIDAS (v1)         |
      * +--------------------------------------+
      */
-    Route::middleware(['auth:api', 'validaSessaoJwt'])->name('private.')->group(function () {
+    Route::middleware(['auth:api', 'validateJwtSession'])->name('private.')->group(function () {
 
         Route::apiResource('user', UserController::class)->except(['store']);
         Route::apiResource('products', ProductController::class);

@@ -21,7 +21,9 @@ return new class extends Migration
             $table->integer('stock_quantity');
             $table->integer('low_stock_threshold')->default(10);
             $table->boolean('active')->default(true);
-            $table->foreignId('category_id')->constrained('categories', 'id');
+            $table->foreignId('category_id')
+                ->nullable() // TODO: Talvez faca mais sentido deixar como obrigacao definir uma categoria
+                ->constrained('categories', 'id');
             $table->softDeletes();
             $table->timestamps();
         });

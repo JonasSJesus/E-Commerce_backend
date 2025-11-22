@@ -1,0 +1,25 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Repositories\Product\Contracts;
+
+use App\Models\Product;
+use Illuminate\Support\Collection;
+
+interface ProductRepository
+{
+    public function createProduct(array $product): Product;
+
+    public function getProductById(int $id): Product|null;
+
+    public function findByEmail(string $email): Product|null;
+
+    /** @return Collection|null */
+    public function getProducts(): Collection|null;
+
+    public function updateProduct(int $id, array $newProperties): Product|null;
+
+    public function updateProductPwd(int $id, string $password): Product;
+
+    public function deleteProduct(int $id): bool;
+}

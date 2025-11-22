@@ -3,37 +3,53 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Product;
 
-use App\Models\Product;
+use App\Http\Controllers\Base\ApiController;
+use App\Http\Requests\ProductFormRequest;
+use App\Http\Transformers\Product\ProductTransformer;
+use App\Repositories\Product\Contracts\ProductRepository;
 use Illuminate\Http\Request;
 
-class ProductController
+class ProductController extends ApiController
 {
+    private ProductRepository $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        try {
+            $products = $this->productRepository->getProducts();
+
+            return $this->responseCollection($products, new ProductTransformer);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage());
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductFormRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'slug' => 'required|string|max:255|unique:products',
-            'description' => 'nullable|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'cost_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'category_id' => 'required|integer|exists:categories,id',
-        ]);
+        $validatedData = $request->validated();
 
-        $product = Product::create($validatedData);
+        try {
+            $product = $this->productRepository->createProduct($validatedData);
 
-        return response()->json($product, 201);
+            return $this->responseCreated(
+                modelCreated: $product,
+                transformer:  new ProductTransformer,
+                resourceName: 'Produto'
+            );
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage());
+        }
     }
 
     /**

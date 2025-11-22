@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Authentication;
 
+use App\Http\Controllers\Base\ApiController;
 use App\Http\Requests\AuthFormRequest;
 use App\Http\Requests\UserFormRequest;
 use App\Services\AuthService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     private AuthService $authService;
 

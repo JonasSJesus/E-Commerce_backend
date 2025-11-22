@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'validaSessaoJwt' => ValidateJwtSession::class,
+            'validateJwtSession' => ValidateJwtSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
