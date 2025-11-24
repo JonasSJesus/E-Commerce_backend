@@ -32,6 +32,8 @@ class UserSeeder extends Seeder
 
     private function createFakeUsers(): void
     {
-        User::factory()->count(5)->create();
+        User::factory()->count(5)->create([
+            "password" => Hash::make("fake"),
+        ]);
     }
 }
