@@ -81,4 +81,65 @@ class HttpProductTest extends TestCase
             ]
         ]);
     }
+
+    public function test_user_can_view_single_product()
+    {
+        // Arrange
+        $product = Product::factory()->create();
+
+        // Act
+        $response = $this->authUser()
+            ->getJson(route('api.v1.private.products.show', $product->id));
+
+        // Assert
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'id'   => $product->id,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'description' => $product->description,
+        ]);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'slug',
+                'description',
+                'price',
+                'cost_price',
+                'stock_quantity',
+                'low_stock_threshold',
+                'active',
+                'category_id',
+            ]
+        ]);
+    }
+
+    public function test_not_found_error_for_product_that_doesnt_exists()
+    {
+        $response = $this->authUser()
+            ->getJson(route('api.v1.private.products.show', 1));
+
+        $response->assertNotFound();
+        $response->assertJsonPath('error', 'Não foi possível encontrar nenhum Produto');
+    }
+
+    public function test_user_can_update_product()
+    {
+        $product = Product::factory()->create();
+        $payload = [
+            'name'           => 'Produto Teste',
+            'slug'           => 'produto-teste-1',
+            'description'    => 'Descrição do produto',
+            'price'          => '100.50',
+            'cost_price'     => '50.00',
+            'stock_quantity' => 30,
+        ];
+
+        $response = $this->authUser()
+            ->putJson(route('api.v1.private.products.update', $product->id), $payload);
+
+        $response->assertOk();
+//        $response->assertJsonPath('message', "Produto atualizado com sucesso");
+    }
 }

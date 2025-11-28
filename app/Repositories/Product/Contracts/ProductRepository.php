@@ -10,9 +10,7 @@ interface ProductRepository
 {
     public function createProduct(array $product): Product;
 
-    public function getProductById(int $id): Product|null;
-
-    public function findByEmail(string $email): Product|null;
+    public function getProductById(int $id): Product;
 
     /** @return Collection|null */
     public function getProducts(): Collection|null;

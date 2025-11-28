@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Product;
 
+use App\Exceptions\Model\ResourceException;
 use App\Http\Controllers\Base\ApiController;
 use App\Http\Requests\ProductFormRequest;
 use App\Http\Transformers\Product\ProductTransformer;
 use App\Repositories\Product\Contracts\ProductRepository;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends ApiController
 {
@@ -55,23 +57,36 @@ class ProductController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        try {
+            $product = $this->productRepository->getProductById($id);
+
+            return $this->responseItem($product, new ProductTransformer);
+        } catch (ResourceException $e) {
+            return $this->responseError($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        try {
+            $product = $this->productRepository->getProductById($id);
+            $product->update($request->all());
+
+            return $this->responseItem($product, new ProductTransformer);
+        } catch (ResourceException $e) {
+            return $this->responseError($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         //
     }

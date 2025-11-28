@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Product\Core;
 
+use App\Exceptions\Model\ResourceException;
+use App\Exceptions\ProductException;
 use App\Models\Product;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Product\Contracts\ProductRepository;
@@ -32,14 +34,18 @@ class ProductRepositoryCore extends BaseRepository implements ProductRepository
         ]);
     }
 
-    public function getProductById(int $id): Product|null
+    /**
+     * @throws ResourceException
+     */
+    public function getProductById(int $id): Product
     {
-        // TODO: Implement getProductById() method.
-    }
+        $product = $this->getQuery()->find($id);
 
-    public function findByEmail(string $email): Product|null
-    {
-        // TODO: Implement findByEmail() method.
+        if (!$product) {
+            throw ResourceException::notFound("Produto");
+        }
+
+        return $product;
     }
 
     public function getProducts(): Collection|null
@@ -49,7 +55,9 @@ class ProductRepositoryCore extends BaseRepository implements ProductRepository
 
     public function updateProduct(int $id, array $newProperties): Product|null
     {
-        // TODO: Implement updateProduct() method.
+        $product = $this->getProductById($id);
+
+        return $product->update($newProperties);
     }
 
     public function updateProductPwd(int $id, string $password): Product

@@ -10,6 +10,7 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Collection as FractalCollection;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class ApiController
 {
@@ -76,12 +77,16 @@ abstract class ApiController
             data:        $modelCreated,
             transformer: $transformer,
             includes:    $includes,
-            statusCode:  201,
+            statusCode:  Response::HTTP_CREATED,
             message:     $message);
     }
 
     protected function responseError(string $message, int $statusCode = 400): JsonResponse
     {
-        return response()->json('error:'.$message, $statusCode);
+        $message = [
+            'error' => $message
+        ];
+
+        return response()->json($message, $statusCode);
     }
 }
