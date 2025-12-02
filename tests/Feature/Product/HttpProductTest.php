@@ -126,6 +126,7 @@ class HttpProductTest extends TestCase
 
     public function test_user_can_update_product()
     {
+        // Arrange
         $product = Product::factory()->create();
         $payload = [
             'name'           => 'Produto Teste',
@@ -136,10 +137,25 @@ class HttpProductTest extends TestCase
             'stock_quantity' => 30,
         ];
 
+        // Act
         $response = $this->authUser()
             ->putJson(route('api.v1.private.products.update', $product->id), $payload);
 
+        // Assert
         $response->assertOk();
-//        $response->assertJsonPath('message', "Produto atualizado com sucesso");
+    }
+
+    public function test_user_can_delete_product()
+    {
+        // Arrange
+        $product = Product::factory()->create();
+
+        // Act
+        $response = $this->authUser()
+            ->deleteJson(route('api.v1.private.products.destroy', $product->id));
+
+        // Assert
+        $response->assertNoContent();
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 }

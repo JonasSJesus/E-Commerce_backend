@@ -17,7 +17,5 @@ interface ProductRepository
 
     public function updateProduct(int $id, array $newProperties): Product|null;
 
-    public function updateProductPwd(int $id, string $password): Product;
-
     public function deleteProduct(int $id): bool;
 }

@@ -88,6 +88,12 @@ class ProductController extends ApiController
      */
     public function destroy(int $id)
     {
-        //
+        try {
+            $this->productRepository->deleteProduct($id);
+
+            return $this->responseOk("Produto deletado com sucesso", Response::HTTP_NO_CONTENT);
+        } catch (ResourceException $e) {
+            return $this->responseError($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
     }
 }

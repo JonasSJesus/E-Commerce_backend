@@ -53,20 +53,24 @@ class ProductRepositoryCore extends BaseRepository implements ProductRepository
         return $this->getQuery()->get();
     }
 
-    public function updateProduct(int $id, array $newProperties): Product|null
+    /**
+     * @throws ResourceException
+     */
+    public function updateProduct(int $id, array $newProperties): Product
+    {
+        $product = $this->getProductById($id);
+        $product->update($newProperties);
+
+        return $product;
+    }
+
+    /**
+     * @throws ResourceException
+     */
+    public function deleteProduct(int $id): bool
     {
         $product = $this->getProductById($id);
 
-        return $product->update($newProperties);
-    }
-
-    public function updateProductPwd(int $id, string $password): Product
-    {
-        // TODO: Implement updateProductPwd() method.
-    }
-
-    public function deleteProduct(int $id): bool
-    {
-        // TODO: Implement deleteProduct() method.
+        return $product->delete();
     }
 }

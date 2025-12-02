@@ -81,6 +81,11 @@ abstract class ApiController
             message:     $message);
     }
 
+    protected function responseOk(?string $message = null, ?int $statusCode = null): JsonResponse
+    {
+        return response()->json($message ?? [], $statusCode ?? Response::HTTP_OK);
+    }
+
     protected function responseError(string $message, int $statusCode = 400): JsonResponse
     {
         $message = [
