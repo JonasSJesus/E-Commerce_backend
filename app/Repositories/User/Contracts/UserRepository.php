@@ -14,9 +14,6 @@ interface UserRepository
 
     public function findByEmail(string $email): User|null;
 
-    /** @return Collection|null */
-    public function getUsers(): Collection|null;
-
     public function updateUser(int $id, array $newProperties): User|null;
 
     public function updateUserPwd(int $id, string $password): User;

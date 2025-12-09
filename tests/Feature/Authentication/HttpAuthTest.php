@@ -140,7 +140,7 @@ class HttpAuthTest extends TestCase
     public function test_user_cannot_access_private_routes()
     {
         // Act
-        $responseResource = $this->get(route('api.v1.private.user.index'));
+        $responseResource = $this->get(route('api.v1.private.user.show', 1));
         $responseAuthPrivate = $this->post(route('api.v1.auth.private.refresh'));
 
         // Assert

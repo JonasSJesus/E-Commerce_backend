@@ -33,7 +33,7 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
         return $query->create([
             'name'      => $user['name'],
             'email'     => $user['email'],
-            'password'  => Hash::make($user['password']),
+            'password'  => $user['password'],
             'phone'     => $user['phone'] ?? null
         ]);
     }
@@ -43,16 +43,6 @@ class UserRepositoryCore extends BaseRepository implements UserRepository
     {
         $query = $this->getQuery();
         if ($user = $query->find($id)) {
-            return $user;
-        }
-
-        return null;
-    }
-
-    public function getUsers(): Collection|null
-    {
-        $query = $this->getQuery();
-        if ($user = $query->get()) {
             return $user;
         }
 

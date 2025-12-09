@@ -8,14 +8,9 @@ use Illuminate\Support\Collection;
 
 interface ProductRepository
 {
-    public function createProduct(array $product): Product;
 
     public function getProductById(int $id): Product;
 
     /** @return Collection|null */
     public function getProducts(): Collection|null;
-
-    public function updateProduct(int $id, array $newProperties): Product|null;
-
-    public function deleteProduct(int $id): bool;
 }

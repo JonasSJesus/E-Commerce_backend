@@ -51,6 +51,7 @@ class AuthController extends ApiController
         }
     }
 
+    // Todo: adicionar validacao de regras de senha para atualizar
     public function updatePassword(Request $request, int $id): JsonResponse
     {
         if (!auth()->user()->isUserId($id)) {

@@ -19,21 +19,6 @@ class ProductRepositoryCore extends BaseRepository implements ProductRepository
         $this->modelClass = $model;
     }
 
-    public function createProduct(array $product): Product
-    {
-        $query = $this->getQuery();
-
-        return $query->create([
-            'name'           => $product['name'],
-            'slug'           => $product['slug'],
-            'description'    => $product['description'],
-            'price'          => $product['price'],
-            'cost_price'     => $product['cost_price'],
-            'stock_quantity' => $product['stock_quantity'],
-            'category_id'    => $product['category_id'] ?? null,
-        ]);
-    }
-
     /**
      * @throws ResourceException
      */
@@ -51,26 +36,5 @@ class ProductRepositoryCore extends BaseRepository implements ProductRepository
     public function getProducts(): Collection|null
     {
         return $this->getQuery()->get();
-    }
-
-    /**
-     * @throws ResourceException
-     */
-    public function updateProduct(int $id, array $newProperties): Product
-    {
-        $product = $this->getProductById($id);
-        $product->update($newProperties);
-
-        return $product;
-    }
-
-    /**
-     * @throws ResourceException
-     */
-    public function deleteProduct(int $id): bool
-    {
-        $product = $this->getProductById($id);
-
-        return $product->delete();
     }
 }

@@ -9,43 +9,6 @@ use Tests\TestCase;
 
 class HttpProductTest extends TestCase
 {
-    // Todo: testar permissao de admin para cadastrar produtos
-    public function test_user_can_register_products()
-    {
-        // Arrange
-        $category = Category::factory()->create();
-        $payload = [
-            'name'           => 'Produto Teste',
-            'slug'           => 'produto-teste-1',
-            'description'    => 'Descrição do produto',
-            'price'          => '100.50',
-            'cost_price'     => '50.00',
-            'stock_quantity' => 30,
-            'category_id'    => $category->id,
-        ];
-
-        // Act
-        $response = $this->authUser()
-            ->postJson(route('api.v1.private.products.store'), $payload);
-
-        // Assert
-        $response->assertCreated();
-        $response->assertJsonPath('message', 'Produto criado com sucesso');
-        $response->assertJsonFragment([
-            'name'           => $payload['name'],
-            'slug'           => $payload['slug'],
-            'description'    => $payload['description'],
-            'price'          => '100.50',
-            'cost_price'     => '50.00',
-            'stock_quantity' => $payload['stock_quantity'],
-            'category_id'    => $payload['category_id'],
-        ]);
-        $this->assertDatabaseHas('products', [
-            'name'       => 'Produto Teste',
-            'price'      => 100.50,
-            'cost_price' => 50.00
-        ]);    }
-
     public function test_user_can_view_all_products()
     {
         // Arrange
@@ -122,40 +85,5 @@ class HttpProductTest extends TestCase
 
         $response->assertNotFound();
         $response->assertJsonPath('error', 'Não foi possível encontrar nenhum Produto');
-    }
-
-    public function test_user_can_update_product()
-    {
-        // Arrange
-        $product = Product::factory()->create();
-        $payload = [
-            'name'           => 'Produto Teste',
-            'slug'           => 'produto-teste-1',
-            'description'    => 'Descrição do produto',
-            'price'          => '100.50',
-            'cost_price'     => '50.00',
-            'stock_quantity' => 30,
-        ];
-
-        // Act
-        $response = $this->authUser()
-            ->putJson(route('api.v1.private.products.update', $product->id), $payload);
-
-        // Assert
-        $response->assertOk();
-    }
-
-    public function test_user_can_delete_product()
-    {
-        // Arrange
-        $product = Product::factory()->create();
-
-        // Act
-        $response = $this->authUser()
-            ->deleteJson(route('api.v1.private.products.destroy', $product->id));
-
-        // Assert
-        $response->assertNoContent();
-        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 }

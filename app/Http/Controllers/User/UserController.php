@@ -10,7 +10,7 @@ use App\Repositories\User\Contracts\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UserController extends ApiController
+class UserController extends ApiController // Todo: esta classe deve gerenciar somente a conta do user logado, em vez de todos os usuarios
 {
     private UserRepository $repository;
 
@@ -20,20 +20,6 @@ class UserController extends ApiController
     public function __construct(UserRepository $repository)
     {
         $this->repository = $repository;
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): JsonResponse
-    {
-        $user = $this->repository->getUsers();
-
-        if (!$user) {
-            throw new NotFoundHttpException("Nenhum Recurso encontrado");
-        }
-
-        return $this->responseCollection($user, new UserTransformer);
     }
 
     /**

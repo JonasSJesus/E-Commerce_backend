@@ -5,14 +5,8 @@ namespace Tests\Feature\User;
 use App\Models\User;
 use Tests\TestCase;
 
-class HttpUserTest extends TestCase
+class HttpUserTest extends TestCase // Todo: Rotas de usuario devem ser acessiveis somente para o usuario logado
 {
-    public function test_admin_can_view_all_users()
-    {
-        // Todo: Implementar teste de rota visualizacao de todos os usuarios.
-        // Implementar Permissao de admin
-    }
-
     public function test_user_can_view_user_by_id()
     {
         $user = User::factory()->create();

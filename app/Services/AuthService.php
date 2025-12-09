@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -45,6 +46,8 @@ class AuthService
 
     public function registerUser(array $credentials): Collection
     {
+        $credentials['password'] = Hash::make($credentials['password']);
+
         $user = $this->userRepository->createUser($credentials);
 
         $userCreated = [
