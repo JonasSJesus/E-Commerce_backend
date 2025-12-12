@@ -39,9 +39,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     });
     /** Rotas de Produtos */
     Route::controller(ProductController::class)->prefix('products')->name('products.')->group(function () {
-        Route::get('/search/{query}', 'search')->name('search');
-        Route::get('/index', 'index')->name('index');
-        Route::get('/show/{id}', 'show')->name('show');
+        Route::get('/search', 'search')->name('search');
+        Route::get('/', 'index')->name('index');
+        Route::get('/{id}', 'show')->name('show');
     });
 
     /*
@@ -67,8 +67,6 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
  */
 if (config('app.env') !== 'production') {
     Route::prefix('test')->middleware('auth:api')->group(function () {
-        Route::get('/', [TestController::class, 'test'])->name('test.route');
-        Route::post('/', [TestController::class, 'test'])->name('test.route');
-        Route::put('/', [TestController::class, 'test'])->name('test.route');
+        Route::any('/', [TestController::class, 'test'])->name('test.route');
     });
 }
