@@ -35,6 +35,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
                     Route::delete('/logout', 'logout')->name('logout');
                     Route::get('/me', 'me')->name('me'); // Dados do usuário logado
             });
+
+    });
+    /** Rotas de Produtos */
+    Route::controller(ProductController::class)->prefix('products')->name('products.')->group(function () {
+        Route::get('/search/{query}', 'search')->name('search');
+        Route::get('/index', 'index')->name('index');
+        Route::get('/show/{id}', 'show')->name('show');
     });
 
     /*
@@ -45,7 +52,6 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::middleware(['auth:api', 'validateJwtSession'])->name('private.')->group(function () {
 
         Route::apiResource('user', UserController::class)->only(['show', 'update', 'destroy']);
-        Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 
         // Futuros recursos do e-commerce
         // Route::apiResource('orders', OrderController::class);

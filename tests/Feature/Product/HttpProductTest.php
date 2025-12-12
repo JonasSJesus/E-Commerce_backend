@@ -17,7 +17,7 @@ class HttpProductTest extends TestCase
 
         // Act
         $response = $this->authUser()
-            ->getJson(route('api.v1.private.products.index'));
+            ->getJson(route('api.v1.products.index'));
 
         // Assert
         $response->assertOk();
@@ -52,7 +52,7 @@ class HttpProductTest extends TestCase
 
         // Act
         $response = $this->authUser()
-            ->getJson(route('api.v1.private.products.show', $product->id));
+            ->getJson(route('api.v1.products.show', $product->id));
 
         // Assert
         $response->assertOk();
@@ -81,7 +81,7 @@ class HttpProductTest extends TestCase
     public function test_not_found_error_for_product_that_doesnt_exists()
     {
         $response = $this->authUser()
-            ->getJson(route('api.v1.private.products.show', 1));
+            ->getJson(route('api.v1.products.show', 1));
 
         $response->assertNotFound();
         $response->assertJsonPath('error', 'Não foi possível encontrar nenhum Produto');
