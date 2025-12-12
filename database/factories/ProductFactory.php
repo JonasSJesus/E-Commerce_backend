@@ -15,11 +15,8 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'                => $this->faker->words(3, true),
-            'slug'                => $this->faker->slug(),
-            'description'         => $this->faker->text(),
-            'price'               => $this->faker->randomFloat(2, 1, 99999),
-            'cost_price'          => $this->faker->randomFloat(2, 0.50, 50000),
+            'price'               => $this->faker->randomFloat(2, 1, 500),
+            'cost_price'          => $this->faker->randomFloat(2, 0.50, 500),
             'stock_quantity'      => $this->faker->numberBetween(0, 100),
             'low_stock_threshold' => $this->faker->numberBetween(1, 10),
             'active'              => true,
@@ -64,8 +61,8 @@ class ProductFactory extends Factory
     public function expensive(): static
     {
         return $this->state(fn (array $attributes) => [
-            'price'      => $this->faker->randomFloat(2, 5000, 99999),
-            'cost_price' => $this->faker->randomFloat(2, 2500, 50000),
+            'price'      => $this->faker->randomFloat(2, 500, 999),
+            'cost_price' => $this->faker->randomFloat(2, 250, 500),
         ]);
     }
 
