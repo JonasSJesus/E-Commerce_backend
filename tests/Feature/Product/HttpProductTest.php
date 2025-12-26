@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Product;
 
-use App\Models\Category;
 use App\Models\Product;
 use Tests\TestCase;
 
@@ -85,5 +84,38 @@ class HttpProductTest extends TestCase
 
         $response->assertNotFound();
         $response->assertJsonPath('error', 'Não foi possível encontrar nenhum Produto');
+    }
+
+    public function test_can_apply_filter_in_products_route()
+    {
+        $response = $this->authUser()
+            ->getJson(route('api.v1.products.index', [
+            'q' => 'camiseta',
+            'categoria' => 'Masculino',
+            'price_min' => 50,
+            'price_max' => 500,
+            'in_stock' => 1,
+            'active' => 1,
+            'sort_by' => 'price',
+            'sort_dir' => 'asc',
+            'per_page' => 20,
+        ]));
+        $response->ddBody();
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'slug',
+                'description',
+                'price',
+                'cost_price',
+                'stock_quantity',
+                'low_stock_threshold',
+                'active',
+                'category_id',
+            ]
+        ]);
     }
 }

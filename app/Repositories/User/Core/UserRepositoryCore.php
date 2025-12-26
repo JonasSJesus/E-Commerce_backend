@@ -7,8 +7,6 @@ use App\Exceptions\User\UserException;
 use App\Models\User;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\User\Contracts\UserRepository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
 /**
